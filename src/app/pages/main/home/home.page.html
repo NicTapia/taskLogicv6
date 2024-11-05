@@ -2,39 +2,43 @@
 
 <div class="ion-page" id="main-content">
   <app-header [showMenu]="true" title="Inicio"></app-header>
+  
+  
   <ion-content>
-
-    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" >
-      <ion-refresher-content></ion-refresher-content>
-    </ion-refresher>
-
-    <ion-list *ngIf="!loading">
-      <ion-item-sliding class="product-item" *ngFor="let p of products">
-        <ion-item>
-          <ion-avatar slot="start">
-            <img [src]="p.image" />
-          </ion-avatar>
-          <ion-label>
-            <div class="name">{{ p.name }}</div>
-            <div class="data">
-              <strong>Precio:</strong> {{ p.price | currency: 'CLP':'symbol' }}
-              <br>
-              <strong>Cantidad:</strong> {{p.soldUnits}}
-            </div>
-          </ion-label>
-        </ion-item>
-
-        <ion-item-options>
-          <ion-item-option (click)="addUpdateProduct(p)">
-            <ion-icon class="option-btn" name="create-outline"></ion-icon>
-          </ion-item-option>
-
-          <ion-item-option (click)="confirmDeleteProduct(p)" color="danger">
-            <ion-icon class="option-btn" name="trash-outline"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
+    <ion-card class="cart">
+      <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)" >
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+  
+      <ion-list *ngIf="!loading">
+        <ion-item-sliding class="product-item" *ngFor="let p of products">
+          <ion-item>
+            <ion-avatar slot="start">
+              <img [src]="p.image" />
+            </ion-avatar>
+            <ion-label>
+              <div class="name">{{ p.name }}</div>
+              <div class="data">
+                <strong>Precio:</strong> {{ p.price | currency: 'CLP':'symbol' }}
+                <br>
+                <strong>Cantidad:</strong> {{p.soldUnits}}
+              </div>
+            </ion-label>
+          </ion-item>
+  
+          <ion-item-options>
+            <ion-item-option (click)="addUpdateProduct(p)">
+              <ion-icon class="option-btn" name="create-outline"></ion-icon>
+            </ion-item-option>
+  
+            <ion-item-option (click)="confirmDeleteProduct(p)" color="danger">
+              <ion-icon class="option-btn" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </ion-card>
+    
 
     <!--=========== Carga ==========-->
     <ion-list *ngIf="loading">

@@ -4,11 +4,13 @@
     left: 20px;
   }
 
-  #main-content {
-    background-image: url('../../../../assets/icon/fondoAzul.png'); /* Ruta desde la carpeta `assets` */
+  
+
+  ion-content{
+    --background: none;
+    background-image: url('../../../../assets/icon/fondoBlanco.png'); /* Ruta desde la carpeta `assets` */
     background-size: cover; /* Ajusta la imagen al tamaño completo */
     background-position: center; /* Centra la imagen */
     background-repeat: no-repeat; /* Evita que la imagen se repita */
-    height: 100%; /* Asegúrate de que cubra todo el contenido */
+    
   }
-  
