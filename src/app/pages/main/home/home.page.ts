@@ -33,7 +33,7 @@ export class HomePage implements OnInit {
     this.getProducts();
   }
 
-  //======== Agregar o actualizar producto ===========
+  //======== Obtener productos ===========
   getProducts() {
     let path = `users/${this.user().uid}/products`
 
@@ -48,11 +48,56 @@ export class HomePage implements OnInit {
   }
 
   //======== Agregar o actualizar producto ===========
-  addUpdateProduct() {
-    this.utilsSvc.presentModal({
+  async addUpdateProduct(product?: Product) {
+    let success = await this.utilsSvc.presentModal({
       component: AddUpdateProductComponent,
-      cssClass: 'add-update-modal'
+      cssClass: 'add-update-modal',
+      componentProps: { product }
     })
+
+    if(success) this.getProducts();
   }
+
+  // ======== Eliminar producto =========
+  async deleteProduct(product: Product){
+
+    let path = `users/${this.user().uid}/products/${product.id}`
+
+    const loading = await this.utilsSvc.loading();
+    await loading.present();
+
+    let imagePath = await this.firebaseSvc.getFilePath(product.image);
+    await this.firebaseSvc.deleteFile(imagePath);
+
+    this.firebaseSvc.deleteDocument(path).then(async res => {
+
+      this.products = this.products.filter(p => p.id !== product.id);
+
+      this.utilsSvc.dismissModal({success: true});
+
+      this.utilsSvc.presentToast({
+        message: 'Producto eliminado exitosamente',
+        duration: 1500,
+        color: 'success',
+        position: 'middle',
+        icon: 'checkmark-circle-outline'
+      })
+
+    }).catch(error => {
+      console.log(error);
+
+      this.utilsSvc.presentToast({
+        message: error.message,
+        duration: 2500,
+        color: 'primary',
+        position: 'middle',
+        icon: 'alert-circle-outline'
+      })
+
+    }).finally(() => {
+      loading.dismiss();
+    })
+  
+}
 
 }
