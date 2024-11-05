@@ -3,10 +3,10 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { getFirestore, setDoc, doc, getDoc, addDoc, collection, collectionData, query} from '@angular/fire/firestore';
+import { getFirestore, setDoc, doc, getDoc, addDoc, collection, collectionData, query, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { UtilsService } from './utils.service';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { getStorage, uploadString, ref, getDownloadURL } from 'firebase/storage';
+import { getStorage, uploadString, ref, getDownloadURL ,deleteObject} from 'firebase/storage';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,7 @@ export class FirebaseService {
     updateUser(displayName: string) {
       return updateProfile(getAuth().currentUser, { displayName })
     }
+    
 
     // ======== Enviar email para restablecer la contraseña =======
     sendRecoveryEmail(email: string) {
@@ -66,6 +67,11 @@ export class FirebaseService {
       return setDoc(doc(getFirestore(), path), data);
     }
 
+     // ======= actualizar un documento ===========
+     updateDocument(path: string, data: any) {
+      return updateDoc(doc(getFirestore(), path), data);
+    }
+
     // ======= Obtener un documento ===========
     async getDocument(path: string) {
       return (await getDoc(doc(getFirestore(), path))).data();
@@ -75,7 +81,11 @@ export class FirebaseService {
     addDocument(path: string, data: any) {
       return addDoc(collection(getFirestore(), path), data);
     }
-
+   
+    // ======= Borrar documento =========== 
+    deleteDocument(path:string){
+      return deleteDoc(doc(getFirestore(),path));
+    }
     // ======================== Almacenamiento ==========================
 
     // ======= Subir Imagen ===========
@@ -83,6 +93,22 @@ export class FirebaseService {
       return uploadString(ref(getStorage(), path), data_url, 'data_url').then(() => {
         return getDownloadURL(ref(getStorage(), path))
       })
+    }
+    //ruta de la imagen con su url //
+    async getFilePath(url: string){
+      return ref(getStorage(), url).fullPath
+    }
+
+    //eliminar archivo//
+    deleteFile(path: string){
+      return deleteObject(ref(getStorage(),path));
+    }
+
+
+
+
+    getProducts() {
+      return this.getCollectionData('products'); // 'products' es el nombre de la colección en Firebase
     }
 
 }
