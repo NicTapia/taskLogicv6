@@ -1,0 +1,31 @@
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-menu-toggle>
+      <ion-button>Perfil</ion-button>
+    </ion-menu-toggle>
+    <br>
+    <ion-menu-toggle>
+      <ion-button>Inventario</ion-button>
+    </ion-menu-toggle>
+    <br>
+    <ion-menu-toggle>
+      <ion-button>Trabajadores</ion-button>
+    </ion-menu-toggle>
+    <br>
+    <ion-menu-toggle>
+      <ion-button>Tareas</ion-button>
+    </ion-menu-toggle>
+    <br>
+    <ion-menu-toggle>
+      <ion-button (click)="signOut()" class="sign-out-btn">
+        Cerrar Sesión
+      </ion-button>
+    </ion-menu-toggle>
+    
+  </ion-content>
+</ion-menu>

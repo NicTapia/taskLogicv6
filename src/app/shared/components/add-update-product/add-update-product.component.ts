@@ -1,4 +1,6 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+
+import { Component, inject, Input, input, OnInit } from '@angular/core';
+
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/models/product.model';
 import { User } from 'src/app/models/user.model';
@@ -10,7 +12,9 @@ import { UtilsService } from 'src/app/services/utils.service';
   templateUrl: './add-update-product.component.html',
   styleUrls: ['./add-update-product.component.scss'],
 })
-export class AddUpdateProductComponent  implements OnInit {
+export class AddUpdateProductComponent {
+  @Input() product: Product;
+
 
   @Input() product: Product;
 
@@ -38,7 +42,9 @@ export class AddUpdateProductComponent  implements OnInit {
     this.form.controls.image.setValue(dataUrl);
   }
 
-  submit() {
+
+  submit(){
+
     if (this.form.valid) {
       if(this.product) this.updateProduct();
       else this.createProduct()
@@ -47,6 +53,15 @@ export class AddUpdateProductComponent  implements OnInit {
 
   // ======== Crear producto =========
   async createProduct(){
+
+      if(this.product) this.updateProduct();
+      else this.createProduct()
+
+    } 
+  }
+ // crear producto //
+  async createProduct(){
+    
 
       let path = `users/${this.user.uid}/products`
 
@@ -89,23 +104,25 @@ export class AddUpdateProductComponent  implements OnInit {
         loading.dismiss();
       })
     
-  }
 
-  // ======== Actualizar producto =========
+  }
+  //actualizar producto//
   async updateProduct(){
+   
 
       let path = `users/${this.user.uid}/products/${this.product.id}`
 
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      // ======== Si cambio la imagen, subir la nueva y obtener la URL =========
+      // ======== Subir la imagen y obtener la URL =========
       if(this.form.value.image !== this.product.image){
         let dataUrl = this.form.value.image;
         let imagePath = await this.firebaseSvc.getFilePath(this.product.image);
         let imageUrl = await this.firebaseSvc.uploadImage(imagePath, dataUrl);
         this.form.controls.image.setValue(imageUrl);
       }
+      
       
       delete this.form.value.id
 
@@ -136,7 +153,7 @@ export class AddUpdateProductComponent  implements OnInit {
       }).finally(() => {
         loading.dismiss();
       })
-    
-  }
+    }
+  
 
 }

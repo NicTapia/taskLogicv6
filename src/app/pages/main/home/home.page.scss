@@ -4,11 +4,12 @@
     left: 20px;
   }
 
-  ion-content {
+  ion-content{
     --background: none;
-    background-image: url('../../../../assets/icon/fondoBlanco.png');
-    background-size: cover; 
-    background-position: center center; 
-    background-repeat: no-repeat; 
-    background-attachment: fixed; 
+    background-image: url('../../../../assets/icon/fondoBlanco.png'); /* Ruta desde la carpeta `assets` */
+    background-size: cover; /* Ajusta la imagen al tamaño completo */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    
+
   }
