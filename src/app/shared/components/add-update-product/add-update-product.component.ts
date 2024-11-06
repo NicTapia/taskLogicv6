@@ -1,4 +1,6 @@
+
 import { Component, inject, Input, input, OnInit } from '@angular/core';
+
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Product } from 'src/app/models/product.model';
 import { User } from 'src/app/models/user.model';
@@ -13,6 +15,8 @@ import { UtilsService } from 'src/app/services/utils.service';
 export class AddUpdateProductComponent {
   @Input() product: Product;
 
+
+  @Input() product: Product;
 
   form = new FormGroup({
     id: new FormControl(''),
@@ -38,8 +42,17 @@ export class AddUpdateProductComponent {
     this.form.controls.image.setValue(dataUrl);
   }
 
+
   submit(){
+
     if (this.form.valid) {
+      if(this.product) this.updateProduct();
+      else this.createProduct()
+    }
+  }
+
+  // ======== Crear producto =========
+  async createProduct(){
 
       if(this.product) this.updateProduct();
       else this.createProduct()
@@ -91,6 +104,7 @@ export class AddUpdateProductComponent {
         loading.dismiss();
       })
     
+
   }
   //actualizar producto//
   async updateProduct(){

@@ -59,6 +59,7 @@ export class HomePage implements OnInit {
 
   //======== Agregar o actualizar producto ===========
   async addUpdateProduct(product?: Product) {
+
     const result = await this.utilsSvc.presentModal({
       component: AddUpdateProductComponent,
       cssClass: 'add-update-modal',
@@ -121,4 +122,5 @@ async deleteProduct(product: Product) {
     loading.dismiss();
   });
 }
+
 }

@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from 'firebase/auth';
 import { User } from '../models/user.model';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+
 import { getFirestore, setDoc, doc, getDoc, addDoc, collection, collectionData, query, updateDoc, deleteDoc } from '@angular/fire/firestore';
 import { UtilsService } from './utils.service';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
@@ -67,6 +68,7 @@ export class FirebaseService {
       return setDoc(doc(getFirestore(), path), data);
     }
 
+
      // ======= actualizar un documento ===========
      updateDocument(path: string, data: any) {
       return updateDoc(doc(getFirestore(), path), data);
@@ -109,6 +111,16 @@ export class FirebaseService {
 
     getProducts() {
       return this.getCollectionData('products'); // 'products' es el nombre de la colección en Firebase
+    }
+
+    // ======= Obtener ruta de la imagen con su url ===========
+    async getFilePath(url: string) {
+      return ref(getStorage(), url).fullPath
+    }
+
+    // ======= Elminar archivo ===========
+    deleteFile(path: string) {
+      return deleteObject(ref(getStorage(), path));
     }
 
 }
