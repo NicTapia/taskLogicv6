@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { User } from 'src/app/models/user.model';
 import { FirebaseService } from 'src/app/services/firebase.service';
 import { UtilsService } from 'src/app/services/utils.service';
+import { EmailService } from 'src/app/services/email.service'; // Servicio de EmailJS
 
 @Component({
   selector: 'app-sign-up',
@@ -10,82 +11,84 @@ import { UtilsService } from 'src/app/services/utils.service';
   styleUrls: ['./sign-up.page.scss'],
 })
 export class SignUpPage implements OnInit {
-
   form = new FormGroup({
     uid: new FormControl(''),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required]),
-    name: new FormControl('', [Validators.required, Validators.minLength(4)]), 
-  })
+    name: new FormControl('', [Validators.required, Validators.minLength(4)]),
+  });
 
   firebaseSvc = inject(FirebaseService);
   utilsSvc = inject(UtilsService);
+  emailSvc = inject(EmailService); // Servicio EmailJS
 
-  ngOnInit() {    
-  }
+  ngOnInit() {}
 
-  async submit(){
+  async submit() {
     if (this.form.valid) {
-
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      this.firebaseSvc.singUp(this.form.value as User).then(async res => {
-
-        await this.firebaseSvc.updateUser(this.form.value.name);
-
-        let uid = res.user.uid;
+      try {
+        const userCredential = await this.firebaseSvc.singUp(this.form.value as User);
+        const uid = userCredential.user.uid;
         this.form.controls.uid.setValue(uid);
 
-        this.setUserInfo(uid);
+        await this.firebaseSvc.updateUser(this.form.value.name);
+        await this.setUserInfo(uid);
 
-      }).catch(error => {
-        console.log(error);
+        // Enviar correo de confirmación
+        const { name, email } = this.form.value;
+        console.log('Enviando correo con:', { name, email });
+        await this.emailSvc.sendEmail({ name, email });
+        console.log('Correo enviado correctamente');
 
+        // Mostrar mensaje de éxito
+        this.utilsSvc.presentToast({
+          message: 'Registro exitoso. Se envió un correo de confirmación.',
+          duration: 3000,
+          color: 'success',
+        });
+      } catch (error) {
+        console.error('Error durante el registro o envío de correo:', error);
+
+        // Mostrar mensaje de error
         this.utilsSvc.presentToast({
           message: error.message,
-          duration: 2500,
-          color: 'primary',
-          position: 'middle',
-          icon: 'alert-circle-outline'
-        })
-
-      }).finally(() => {
+          duration: 3000,
+          color: 'danger',
+        });
+      } finally {
         loading.dismiss();
-      })
+      }
     }
   }
 
-  async setUserInfo(uid: string){
+  async setUserInfo(uid: string) {
     if (this.form.valid) {
-
       const loading = await this.utilsSvc.loading();
       await loading.present();
 
-      let path = `users/${uid}`;
-      delete this.form.value.password;
+      try {
+        const path = `users/${uid}`;
+        const formData = { ...this.form.value };
+        delete formData.password; // No guardar la contraseña
 
-      this.firebaseSvc.setDocument(path, this.form.value).then(async res => {
-
-        this.utilsSvc.saveInLocalStorage('user', this.form.value);
+        await this.firebaseSvc.setDocument(path, formData);
+        this.utilsSvc.saveInLocalStorage('user', formData);
         this.utilsSvc.routerLink('/main/home');
-        this.form.reset();        
-      
-
-      }).catch(error => {
-        console.log(error);
+        this.form.reset();
+      } catch (error) {
+        console.error('Error al guardar datos del usuario:', error);
 
         this.utilsSvc.presentToast({
           message: error.message,
-          duration: 2500,
-          color: 'primary',
-          position: 'middle',
-          icon: 'alert-circle-outline'
-        })
-
-      }).finally(() => {
+          duration: 3000,
+          color: 'danger',
+        });
+      } finally {
         loading.dismiss();
-      })
+      }
     }
   }
 }
